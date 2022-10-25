@@ -1,5 +1,7 @@
 package homework;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedList;
 
 /**
@@ -8,15 +10,13 @@ import java.util.LinkedList;
  * @author Vadim_Kraynov
  */
 public class CustomerReverseOrder {
-    private final LinkedList<Customer> linkedList = new LinkedList<>();
+    private final Deque<Customer> stack = new ArrayDeque<>();
 
     public void add(Customer customer) {
-        linkedList.add(customer);
+        stack.push(customer);
     }
 
     public Customer take() {
-        Customer last = linkedList.getLast();
-        linkedList.remove(last);
-        return last;
+        return stack.pop();
     }
 }

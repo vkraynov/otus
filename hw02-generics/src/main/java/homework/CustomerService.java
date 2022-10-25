@@ -2,6 +2,7 @@ package homework;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -15,16 +16,13 @@ public class CustomerService {
     public Map.Entry<Customer, String> getSmallest() {
         Map.Entry<Customer, String> smallest = orderedMap.firstEntry();
 
-        return Map.entry(new Customer(smallest.getKey()), smallest.getValue());
+        return Objects.nonNull(smallest) ? Map.entry(new Customer(smallest.getKey()), smallest.getValue()) : null;
     }
 
     public Map.Entry<Customer, String> getNext(Customer customer) {
-        for (Map.Entry<Customer, String> entry : orderedMap.entrySet()) {
-            if (entry.getKey().getScores() > customer.getScores()) {
-                return Map.entry(new Customer(entry.getKey()), entry.getValue());
-            }
-        }
-        return null;
+        Map.Entry<Customer, String> higherEntry = orderedMap.higherEntry(customer);
+
+        return Objects.nonNull(higherEntry) ? Map.entry(new Customer(higherEntry.getKey()), higherEntry.getValue()) : null;
     }
 
     public void add(Customer customer, String data) {
