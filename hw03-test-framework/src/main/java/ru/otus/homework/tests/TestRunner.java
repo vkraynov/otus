@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,10 @@ import java.util.stream.Collectors;
  */
 public class TestRunner {
 
-    public void runTests(String className) throws Exception {
+    private final EnumMap<TestResult, Integer> resultMap = new EnumMap<>(TestResult.class);
+
+
+    public EnumMap<TestResult, Integer> runTests(String className) throws Exception {
         Class<?> clazz = Class.forName(className);
         Constructor<?> constructor = clazz.getConstructor();
         Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -44,7 +48,12 @@ public class TestRunner {
             }
         }
 
-        printResult(methodsWithTestAnnotation.size(), errorCount);
+        resultMap.put(TestResult.TOTAL, methodsWithTestAnnotation.size());
+        resultMap.put(TestResult.SUCCESS, methodsWithTestAnnotation.size() - errorCount);
+        resultMap.put(TestResult.FAILED, errorCount);
+
+        return resultMap;
+
     }
 
     private List<Method> findMethodsWithAnnotation(Method[] declaredMethods, Class annotationClass) {
@@ -57,13 +66,5 @@ public class TestRunner {
         for (Method method : methodsWithBeforeAnnotation) {
             method.invoke(object);
         }
-    }
-
-    private void printResult(int size, int errorCount) {
-        System.out.println("\n-------------------------------------------------------------------------------------\n");
-        System.out.printf("Всего тестов запущено: %d\n", size);
-        System.out.printf(ConsoleColors.GREEN_BOLD + "Прошло успешно: %d\n" + ConsoleColors.RESET, size - errorCount);
-        System.out.printf(ConsoleColors.RED_BOLD + "Завершились с ошибкой: %d\n" + ConsoleColors.RESET, errorCount);
-        System.out.println("\n-------------------------------------------------------------------------------------\n");
     }
 }
