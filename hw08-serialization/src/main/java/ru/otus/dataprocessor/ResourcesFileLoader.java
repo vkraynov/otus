@@ -24,8 +24,8 @@ public class ResourcesFileLoader implements Loader {
             measurements = StreamSupport.stream(node.spliterator(), false)
                     .map(el -> new Measurement(el.get("name").textValue(), Double.parseDouble(String.valueOf(el.get("value")))))
                     .toList();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            throw new FileProcessException(ex);
         }
         return measurements;
     }
