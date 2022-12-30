@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * @author Vadim_Kraynov @email: vkrainov@vtb.ru
+ * AddressDto.
+ *
+ * @author Vadim_Kraynov
  * @since 30.12.2022
  */
 @Data

@@ -5,7 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @author Vadim_Kraynov @email: vkrainov@vtb.ru
+ * ClientDto.
+ *
+ * @author Vadim_Kraynov
  * @since 30.12.2022
  */
 @Data
