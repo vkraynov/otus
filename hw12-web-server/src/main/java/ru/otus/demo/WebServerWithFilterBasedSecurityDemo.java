@@ -13,14 +13,13 @@ import ru.otus.crm.model.Phone;
 import ru.otus.crm.model.User;
 import ru.otus.crm.service.DbServiceClientImpl;
 import ru.otus.crm.service.DbServiceUserImpl;
+import ru.otus.crm.service.InitDbServiceImpl;
 import ru.otus.crm.service.TemplateProcessor;
 import ru.otus.crm.service.TemplateProcessorImpl;
 import ru.otus.crm.service.UserAuthService;
 import ru.otus.crm.service.UserAuthServiceImpl;
 import ru.otus.server.ClientsWebServer;
 import ru.otus.server.ClientsWebServerWithFilterBasedSecurity;
-
-import java.util.List;
 
 /*
     Полезные для демо ссылки
@@ -60,14 +59,7 @@ public class WebServerWithFilterBasedSecurityDemo {
 
         var dbServiceUser = new DbServiceUserImpl(transactionManager, userTemplate);
 
-        List<Client> clients = List.of(new Client(null, "Vasya", new Address(null, "AnyStreet"), List.of(new Phone(null, "13-555-22"), new Phone(null, "14-666-333"))),
-                new Client(null, "Petya", new Address(null, "AnyStreet"), List.of(new Phone(null, "13-555-22"), new Phone(null, "14-666-333"))),
-                new Client(null, "Sergey", new Address(null, "AnyStreet"), List.of(new Phone(null, "13-555-22"), new Phone(null, "14-666-333"))));
-
-        clients.forEach(dbServiceClient::saveClient);
-
-
-        dbServiceUser.saveUser(new User(null, "Админ", "admin", "admin"));
+        new InitDbServiceImpl().initDb();
 
         Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 

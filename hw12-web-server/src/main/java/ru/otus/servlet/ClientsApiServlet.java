@@ -12,7 +12,6 @@ import ru.otus.crm.model.Client;
 import ru.otus.crm.model.Phone;
 import ru.otus.crm.service.DBServiceClient;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,18 +29,8 @@ public class ClientsApiServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        StringBuilder jb = new StringBuilder();
-        String line;
-        try {
-            BufferedReader reader = request.getReader();
-            while ((line = reader.readLine()) != null)
-                jb.append(line);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-        String stringClient = jb.toString();
-        Client clientToSave = new Gson().fromJson(stringClient, Client.class);
+        Client clientToSave = new Gson().fromJson(request.getReader(), Client.class);
 
         Client savedClient = dBServiceClient.saveClient(clientToSave);
         ClientDto clientDto = mapEntityToDto(savedClient);
