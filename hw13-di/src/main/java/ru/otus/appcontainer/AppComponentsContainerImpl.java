@@ -1,5 +1,6 @@
 package ru.otus.appcontainer;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private final List<Object> appComponents = new ArrayList<>();
@@ -20,6 +22,30 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     public AppComponentsContainerImpl(Class<?> initialConfigClass) {
         processConfig(initialConfigClass);
+    }
+
+    @Override
+    public <C> C getAppComponent(Class<C> componentClass) {
+        List<Object> components = new ArrayList<>();
+        for (Object appComponent : appComponents) {
+            AnnotatedType[] annotatedInterfaces = appComponent.getClass().getAnnotatedInterfaces();
+            for (AnnotatedType annotatedType : annotatedInterfaces) {
+                if (annotatedType.getType().equals(componentClass) || appComponent.getClass().isAssignableFrom(componentClass)) {
+                    components.add(appComponent);
+                }
+            }
+        }
+        if (components.size() != 1) {
+            throw new RuntimeException("В контексте отсутсвтует или дублируется искомый компонент");
+        }
+
+        return (C) components.get(0);
+
+    }
+
+    @Override
+    public <C> C getAppComponent(String componentName) {
+        return (C) appComponentsByName.get(componentName);
     }
 
     private void processConfig(Class<?> configClass) {
@@ -56,6 +82,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             }
 
         } catch (Exception e) {
+            log.error("Ошибка при инициализации контекста", e);
             throw new RuntimeException(e);
         }
     }
@@ -64,29 +91,5 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
             throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
         }
-    }
-
-    @Override
-    public <C> C getAppComponent(Class<C> componentClass) {
-        List<Object> components = new ArrayList<>();
-        for (Object appComponent : appComponents) {
-            AnnotatedType[] annotatedInterfaces = appComponent.getClass().getAnnotatedInterfaces();
-            for (AnnotatedType annotatedType : annotatedInterfaces) {
-                if (annotatedType.getType().equals(componentClass) || appComponent.getClass().isAssignableFrom(componentClass)) {
-                    components.add(appComponent);
-                }
-            }
-        }
-        if (components.size() != 1) {
-            throw new RuntimeException("В контексте отсутсвтует или дублируется искомый компонент");
-        }
-
-        return (C) components.get(0);
-
-    }
-
-    @Override
-    public <C> C getAppComponent(String componentName) {
-        return (C) appComponentsByName.get(componentName);
     }
 }
